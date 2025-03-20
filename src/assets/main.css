@@ -26,3 +26,12 @@ body {
   background-color: #343a40;
   color: white;
 }
+
+body {
+  background-image: url('../assets/nen.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
