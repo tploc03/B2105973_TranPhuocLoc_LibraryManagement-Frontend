@@ -1,47 +1,36 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
+<!-- src/App.vue -->
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div id="app">
+    <Navbar v-if="authStore.isAuthenticated" />
+    <div class="main-content" :class="{ 'with-navbar': authStore.isAuthenticated }">
+      <router-view />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script>
+import Navbar from '@/components/Navbar.vue';
+import { useAuthStore } from '@/stores/auth';
+
+export default {
+  components: {
+    Navbar,
+  },
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
+};
+</script>
+
+<style>
+#app {
+  font-family: 'Arial', sans-serif;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.main-content {
+  padding: 20px;
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.with-navbar {
+  padding-top: 80px; /* Khoảng cách để tránh Navbar che nội dung */
 }
 </style>
