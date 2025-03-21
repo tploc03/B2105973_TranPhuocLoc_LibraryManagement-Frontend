@@ -1,38 +1,31 @@
-<!-- src\views\DocgiaList.vue -->
+<!-- src\views\UserMuonsachList.vue -->
 <template>
   <div class="page">
     <div class="card shadow-sm">
-      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h1 class="mb-0">Danh sách Người dùng</h1>
+      <div class="card-header bg-primary text-white">
+        <h1 class="mb-0">Lịch sử Mượn sách</h1>
       </div>
       <div class="card-body">
-        <div class="mb-3">
-          <input v-model="searchText" placeholder="Tìm kiếm người dùng (tên, email...)" class="form-control" />
-        </div>
         <div class="table-responsive">
           <table class="table table-striped table-hover table-bordered">
             <thead class="table-dark">
               <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Họ lót</th>
-                <th>Tên</th>
-                <th>Ngày sinh</th>
-                <th>Phái</th>
-                <th>Địa chỉ</th>
-                <th>Điện thoại</th>
+                <th>Mã sách</th>
+                <th>Tên sách</th>
+                <th>Ngày mượn</th>
+                <th>Ngày trả</th>
+                <th>Trạng thái</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="user in paginatedUsers" :key="user._id">
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.hoLot }}</td>
-                <td>{{ user.ten }}</td>
-                <td>{{ formatDate(user.ngaySinh) }}</td>
-                <td>{{ user.phai }}</td>
-                <td>{{ user.diaChi }}</td>
-                <td>{{ user.dienThoai }}</td>
+              <tr v-for="muonsach in paginatedMuonsachs" :key="muonsach._id">
+                <td>{{ muonsach.MASACH }}</td>
+                <td>{{ getSachName(muonsach.MASACH) || 'Không xác định' }}</td>
+                <td>{{ formatDate(muonsach.NGAYMUON) }}</td>
+                <td>{{ formatDate(muonsach.NGAYTRA) || 'Chưa trả' }}</td>
+                <td>
+                  {{ muonsach.status === 'pending' ? 'Chờ duyệt' : muonsach.status === 'approved' ? 'Đã duyệt' : 'Bị từ chối' }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -57,57 +50,59 @@
 </template>
 
 <script>
-import DocgiaService from '@/services/docgia.service';
+import TheodoimuonsachService from '@/services/theodoimuonsach.service';
+import SachService from '@/services/sach.service';
 import { useToast } from 'vue-toastification';
+import { useAuthStore } from '@/stores/auth';
 import { formatDate } from '@/utils/format';
 
 export default {
   data() {
     return {
-      users: [],
-      searchText: '',
+      muonsachs: [],
+      sachs: [], // Lưu danh sách sách để lấy tên sách
       currentPage: 1,
       itemsPerPage: 10,
     };
   },
   computed: {
-    filteredUsers() {
-      if (!this.searchText) return this.users;
-      const search = this.searchText.toLowerCase();
-      return this.users.filter(user =>
-        user.username.toLowerCase().includes(search) ||
-        user.email.toLowerCase().includes(search) ||
-        user.hoLot.toLowerCase().includes(search) ||
-        user.ten.toLowerCase().includes(search)
-      );
-    },
-    paginatedUsers() {
+    paginatedMuonsachs() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.filteredUsers.slice(start, end);
+      return this.muonsachs.slice(start, end);
     },
     totalPages() {
-      return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
+      return Math.ceil(this.muonsachs.length / this.itemsPerPage);
     },
   },
   methods: {
-    async retrieveUsers() {
+    async retrieveMuonsachs() {
+      const authStore = useAuthStore();
       try {
-        this.users = await DocgiaService.getAll();
+        this.muonsachs = await TheodoimuonsachService.getAll();
+        this.sachs = await SachService.getAll(); // Lấy danh sách sách để hiển thị tên sách
       } catch (error) {
-        console.error(error);
-        useToast().error('Không thể tải danh sách người dùng');
+        if (error.response?.status === 401) {
+          useToast().error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+          authStore.logout();
+          this.$router.push('/login');
+        } else {
+          useToast().error('Không thể tải lịch sử mượn sách');
+        }
       }
     },
+    getSachName(masach) {
+      const sach = this.sachs.find(s => s.MASACH === masach);
+      return sach ? sach.TENSACH : null;
+    },
     refreshList() {
-      this.retrieveUsers();
+      this.retrieveMuonsachs();
       this.currentPage = 1;
-      this.searchText = '';
     },
     formatDate,
   },
   mounted() {
-    this.retrieveUsers();
+    this.retrieveMuonsachs();
   },
 };
 </script>
@@ -118,7 +113,6 @@ export default {
 .card-header { border-radius: 10px 10px 0 0; }
 .table-hover tbody tr:hover { background-color: #f5f5f5; }
 .table th, .table td { vertical-align: middle; text-align: center; }
-.form-control { border-radius: 5px; }
 .btn { border-radius: 5px; }
 .shadow-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 </style>

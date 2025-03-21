@@ -22,17 +22,17 @@ export default (baseURL) => {
     return config;
   }, (error) => Promise.reject(error));
 
-  apiClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        const authStore = require('../stores/auth').useAuthStore();
-        authStore().logout();
-        window.location.href = '/login';
-      }
-      return Promise.reject(error);
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      const authStore = require('../stores/auth').useAuthStore();
+      authStore().logout();
+      window.location.href = '/login';
     }
-  );
+    return Promise.reject(error.response?.data?.message || 'Có lỗi xảy ra');
+  }
+);
 
   return apiClient;
 };

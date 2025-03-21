@@ -1,7 +1,7 @@
 <!-- src/App.vue -->
 <template>
   <div id="app">
-    <Navbar v-if="authStore.isAuthenticated" />
+    <AppHeader v-if="authStore.isAuthenticated" />
     <div class="main-content" :class="{ 'with-navbar': authStore.isAuthenticated }">
       <router-view />
     </div>
@@ -9,28 +9,23 @@
 </template>
 
 <script>
-import Navbar from '@/components/Navbar.vue';
+import AppHeader from '@/components/AppHeader.vue';
 import { useAuthStore } from '@/stores/auth';
 
 export default {
-  components: {
-    Navbar,
-  },
+  components: { AppHeader },
   setup() {
     const authStore = useAuthStore();
     return { authStore };
+  },
+  mounted() {
+    this.authStore.loadUserFromToken();
   },
 };
 </script>
 
 <style>
-#app {
-  font-family: 'Arial', sans-serif;
-}
-.main-content {
-  padding: 20px;
-}
-.with-navbar {
-  padding-top: 80px; /* Khoảng cách để tránh Navbar che nội dung */
-}
+#app { font-family: 'Arial', sans-serif; }
+.main-content { padding: 20px; }
+.with-navbar { padding-top: 80px; }
 </style>

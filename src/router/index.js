@@ -1,104 +1,48 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
-// Định nghĩa các route
+// Các trang hiện có
+import UserHome from '@/views/UserHome.vue';
+import Login from '@/views/Login.vue';
+import Register from '@/views/Register.vue';
+import SachList from '@/views/SachList.vue';
+import DocgiaList from '@/views/DocgiaList.vue';
+import NhanvienList from '@/views/NhanvienList.vue';
+import NhaxuatbanList from '@/views/NhaxuatbanList.vue';
+import MuonsachList from '@/views/MuonsachList.vue';
+import UserSachList from '@/views/UserSachList.vue';
+import UserNhaxuatbanList from '@/views/UserNhaxuatbanList.vue';
+import UserMuonsachList from '@/views/UserMuonsachList.vue';
+
+// Các trang thêm mới
+import SachAdd from '@/views/SachForm.vue';
+import NhanvienAdd from '@/views/NhanvienForm.vue';
+import NhaxuatbanAdd from '@/views/NhaxuatbanForm.vue';
+
 const routes = [
+  { path: '/', redirect: '/login' },
+  { path: '/login', name: 'login', component: Login },
+  { path: '/register', name: 'register', component: Register },
   {
-    path: '/',
-    name: 'home',
-    component: () => import('../views/SachList.vue'), // Trang chủ mặc định là SachList
+    path: '/user/home',
+    name: 'user-home',
+    component: UserHome,
+    meta: { requiresAuth: true, role: 'user' },
   },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('../views/Login.vue'),
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: () => import('../views/Register.vue'),
-  },
-  {
-    path: '/sachs',
-    name: 'sach-list',
-    component: () => import('../views/SachList.vue'),
-  },
-  {
-    path: '/sachs/add',
-    name: 'sach-add',
-    component: () => import('../views/SachForm.vue'),
-  },
-  {
-    path: '/sachs/edit/:id',
-    name: 'sach-edit',
-    component: () => import('../views/SachForm.vue'),
-  },
-  {
-    path: '/docgias',
-    name: 'docgia-list',
-    component: () => import('../views/DocgiaList.vue'),
-  },
-  {
-    path: '/docgias/add',
-    name: 'docgia-add',
-    component: () => import('../views/DocgiaForm.vue'),
-  },
-  {
-    path: '/docgias/edit/:id',
-    name: 'docgia-edit',
-    component: () => import('../views/DocgiaForm.vue'),
-  },
-  {
-    path: '/nhanviens',
-    name: 'nhanvien-list',
-    component: () => import('../views/NhanvienList.vue'),
-  },
-  {
-    path: '/nhanviens/add',
-    name: 'nhanvien-add',
-    component: () => import('../views/NhanvienForm.vue'),
-  },
-  {
-    path: '/nhanviens/edit/:id',
-    name: 'nhanvien-edit',
-    component: () => import('../views/NhanvienForm.vue'),
-  },
-  {
-    path: '/nhaxuatbans',
-    name: 'nhaxuatban-list',
-    component: () => import('../views/NhaxuatbanList.vue'),
-  },
-  {
-    path: '/nhaxuatbans/add',
-    name: 'nhaxuatban-add',
-    component: () => import('../views/NhaxuatbanForm.vue'),
-  },
-  {
-    path: '/nhaxuatbans/edit/:id',
-    name: 'nhaxuatban-edit',
-    component: () => import('../views/NhaxuatbanForm.vue'),
-  },
-  {
-    path: '/muonsachs',
-    name: 'muonsach-list',
-    component: () => import('../views/MuonsachList.vue'),
-  },
-  {
-    path: '/muonsachs/add',
-    name: 'muonsach-add',
-    component: () => import('../views/MuonsachForm.vue'),
-  },
-  {
-    path: '/muonsachs/edit/:id',
-    name: 'muonsach-edit',
-    component: () => import('../views/MuonsachForm.vue'),
-  },
-  { 
-    path: '/:pathMatch(.*)*', 
-    name: 'not-found', 
-    component: () => import('../views/NotFound.vue') 
-  },
+  // Route cho sách
+  { path: '/sachs', name: 'sach-list', component: SachList, meta: { requiresAuth: true, role: 'admin' } },
+  { path: '/sachs/add', name: 'sach-add', component: SachAdd, meta: { requiresAuth: true, role: 'admin' } }, // Thêm sách
+  { path: '/docgias', name: 'docgia-list', component: DocgiaList, meta: { requiresAuth: true, role: 'admin' } },
+  // Route cho nhân viên
+  { path: '/nhanviens', name: 'nhanvien-list', component: NhanvienList, meta: { requiresAuth: true, role: 'admin' } },
+  { path: '/nhanviens/add', name: 'nhanvien-add', component: NhanvienAdd, meta: { requiresAuth: true, role: 'admin' } }, // Thêm nhân viên
+  // Route cho nhà xuất bản
+  { path: '/nhaxuatbans', name: 'nhaxuatban-list', component: NhaxuatbanList, meta: { requiresAuth: true, role: 'admin' } },
+  { path: '/nhaxuatbans/add', name: 'nhaxuatban-add', component: NhaxuatbanAdd, meta: { requiresAuth: true, role: 'admin' } }, // Thêm nhà xuất bản
+  { path: '/muonsachs', name: 'muonsach-list', component: MuonsachList, meta: { requiresAuth: true, role: 'admin' } },
+  { path: '/user/sachs', name: 'user-sach-list', component: UserSachList, meta: { requiresAuth: true, role: 'user' } },
+  { path: '/user/nhaxuatbans', name: 'user-nhaxuatban-list', component: UserNhaxuatbanList, meta: { requiresAuth: true, role: 'user' } },
+  { path: '/user/muonsachs', name: 'user-muonsach-list', component: UserMuonsachList, meta: { requiresAuth: true, role: 'user' } },
 ];
 
 const router = createRouter({
@@ -106,20 +50,21 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  const publicPages = ['/login', '/register']; // Các trang công khai
-  const isPublicPage = publicPages.includes(to.path);
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiredRole = to.matched.some(record => record.meta.role);
 
-  if (!authStore.isAuthenticated && !isPublicPage) {
-    // Nếu chưa đăng nhập và không phải trang công khai, chuyển về login
+  if (requiresAuth && !authStore.isAuthenticated) {
     next('/login');
-  } else if (authStore.isAuthenticated && isPublicPage) {
-    // Nếu đã đăng nhập và cố vào login/register, chuyển về trang chủ
-    next('/');
+  } else if (requiredRole && authStore.user?.role !== to.meta.role) {
+    if (authStore.user?.role === 'admin') {
+      next('/sachs');
+    } else {
+      next('/user/home');
+    }
   } else {
-    next(); // Tiếp tục bình thường
+    next();
   }
 });
 

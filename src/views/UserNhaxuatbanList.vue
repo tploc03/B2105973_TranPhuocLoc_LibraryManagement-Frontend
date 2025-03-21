@@ -1,38 +1,28 @@
-<!-- src\views\DocgiaList.vue -->
+<!-- src\views\UserNhaxuatbanList.vue -->
 <template>
   <div class="page">
     <div class="card shadow-sm">
-      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h1 class="mb-0">Danh sách Người dùng</h1>
+      <div class="card-header bg-primary text-white">
+        <h1 class="mb-0">Danh sách Nhà xuất bản</h1>
       </div>
       <div class="card-body">
         <div class="mb-3">
-          <input v-model="searchText" placeholder="Tìm kiếm người dùng (tên, email...)" class="form-control" />
+          <input v-model="searchText" placeholder="Tìm kiếm nhà xuất bản (mã, tên...)" class="form-control" />
         </div>
         <div class="table-responsive">
           <table class="table table-striped table-hover table-bordered">
             <thead class="table-dark">
               <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Họ lót</th>
-                <th>Tên</th>
-                <th>Ngày sinh</th>
-                <th>Phái</th>
+                <th>Mã nhà xuất bản</th>
+                <th>Tên nhà xuất bản</th>
                 <th>Địa chỉ</th>
-                <th>Điện thoại</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="user in paginatedUsers" :key="user._id">
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.hoLot }}</td>
-                <td>{{ user.ten }}</td>
-                <td>{{ formatDate(user.ngaySinh) }}</td>
-                <td>{{ user.phai }}</td>
-                <td>{{ user.diaChi }}</td>
-                <td>{{ user.dienThoai }}</td>
+              <tr v-for="nhaxuatban in paginatedNhaxuatbans" :key="nhaxuatban.MANXB">
+                <td>{{ nhaxuatban.MANXB }}</td>
+                <td>{{ nhaxuatban.TENNXB }}</td>
+                <td>{{ nhaxuatban.DIACHI }}</td>
               </tr>
             </tbody>
           </table>
@@ -57,57 +47,60 @@
 </template>
 
 <script>
-import DocgiaService from '@/services/docgia.service';
+import NhaxuatbanService from '@/services/nhaxuatban.service';
 import { useToast } from 'vue-toastification';
-import { formatDate } from '@/utils/format';
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   data() {
     return {
-      users: [],
+      nhaxuatbans: [],
       searchText: '',
       currentPage: 1,
       itemsPerPage: 10,
     };
   },
   computed: {
-    filteredUsers() {
-      if (!this.searchText) return this.users;
+    filteredNhaxuatbans() {
+      if (!this.searchText) return this.nhaxuatbans;
       const search = this.searchText.toLowerCase();
-      return this.users.filter(user =>
-        user.username.toLowerCase().includes(search) ||
-        user.email.toLowerCase().includes(search) ||
-        user.hoLot.toLowerCase().includes(search) ||
-        user.ten.toLowerCase().includes(search)
+      return this.nhaxuatbans.filter(nhaxuatban =>
+        nhaxuatban.MANXB.toLowerCase().includes(search) ||
+        nhaxuatban.TENNXB.toLowerCase().includes(search)
       );
     },
-    paginatedUsers() {
+    paginatedNhaxuatbans() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.filteredUsers.slice(start, end);
+      return this.filteredNhaxuatbans.slice(start, end);
     },
     totalPages() {
-      return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
+      return Math.ceil(this.filteredNhaxuatbans.length / this.itemsPerPage);
     },
   },
   methods: {
-    async retrieveUsers() {
+    async retrieveNhaxuatbans() {
+      const authStore = useAuthStore();
       try {
-        this.users = await DocgiaService.getAll();
+        this.nhaxuatbans = await NhaxuatbanService.getAll();
       } catch (error) {
-        console.error(error);
-        useToast().error('Không thể tải danh sách người dùng');
+        if (error.response?.status === 401) {
+          useToast().error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+          authStore.logout();
+          this.$router.push('/login');
+        } else {
+          useToast().error('Không thể tải danh sách nhà xuất bản');
+        }
       }
     },
     refreshList() {
-      this.retrieveUsers();
+      this.retrieveNhaxuatbans();
       this.currentPage = 1;
       this.searchText = '';
     },
-    formatDate,
   },
   mounted() {
-    this.retrieveUsers();
+    this.retrieveNhaxuatbans();
   },
 };
 </script>

@@ -1,56 +1,60 @@
 <template>
   <div class="page">
-    <div class="card shadow-sm">
+    <div class="card">
       <div class="card-header bg-primary text-white">
-        <h1 class="mb-0">{{ isEdit ? 'Sửa Nhân viên' : 'Thêm Nhân viên' }}</h1>
+        <h1 class="mb-0">Thêm nhân viên mới</h1>
       </div>
       <div class="card-body">
-        <form @submit.prevent="handleSubmit">
+        <form @submit.prevent="handleAddNhanvien">
           <div class="mb-3">
-            <label for="MSNV" class="form-label">Mã nhân viên</label>
-            <input v-model="nhanvien.MSNV" type="text" class="form-control" id="MSNV" :disabled="isEdit" placeholder="Nhập mã nhân viên (VD: NV001)" @blur="v$.nhanvien.MSNV.$touch" />
-            <div v-if="v$.nhanvien.MSNV.$dirty && v$.nhanvien.MSNV.$error" class="text-danger">
-              {{ v$.nhanvien.MSNV.$errors[0].$message }}
+            <label for="hoLot" class="form-label">Họ lót</label>
+            <input v-model="form.hoLot" type="text" class="form-control" id="hoLot" @blur="v$.form.hoLot.$touch" />
+            <div v-if="v$.form.hoLot.$dirty && v$.form.hoLot.$error" class="text-danger">
+              {{ v$.form.hoLot.$errors[0].$message }}
             </div>
           </div>
           <div class="mb-3">
-            <label for="HOTENNV" class="form-label">Họ tên</label>
-            <input v-model="nhanvien.HOTENNV" type="text" class="form-control" id="HOTENNV" placeholder="Nhập họ tên" @blur="v$.nhanvien.HOTENNV.$touch" />
-            <div v-if="v$.nhanvien.HOTENNV.$dirty && v$.nhanvien.HOTENNV.$error" class="text-danger">
-              {{ v$.nhanvien.HOTENNV.$errors[0].$message }}
+            <label for="ten" class="form-label">Tên</label>
+            <input v-model="form.ten" type="text" class="form-control" id="ten" @blur="v$.form.ten.$touch" />
+            <div v-if="v$.form.ten.$dirty && v$.form.ten.$error" class="text-danger">
+              {{ v$.form.ten.$errors[0].$message }}
             </div>
           </div>
           <div class="mb-3">
-            <label for="PASSWORD" class="form-label">Mật khẩu</label>
-            <input v-model="nhanvien.PASSWORD" type="password" class="form-control" id="PASSWORD" placeholder="Nhập mật khẩu" @blur="v$.nhanvien.PASSWORD.$touch" />
-            <div v-if="v$.nhanvien.PASSWORD.$dirty && v$.nhanvien.PASSWORD.$error" class="text-danger">
-              {{ v$.nhanvien.PASSWORD.$errors[0].$message }}
+            <label for="ngaySinh" class="form-label">Ngày sinh</label>
+            <input v-model="form.ngaySinh" type="date" class="form-control" id="ngaySinh" @blur="v$.form.ngaySinh.$touch" />
+            <div v-if="v$.form.ngaySinh.$dirty && v$.form.ngaySinh.$error" class="text-danger">
+              {{ v$.form.ngaySinh.$errors[0].$message }}
             </div>
           </div>
           <div class="mb-3">
-            <label for="CHUCVU" class="form-label">Chức vụ</label>
-            <input v-model="nhanvien.CHUCVU" type="text" class="form-control" id="CHUCVU" placeholder="Nhập chức vụ" @blur="v$.nhanvien.CHUCVU.$touch" />
-            <div v-if="v$.nhanvien.CHUCVU.$dirty && v$.nhanvien.CHUCVU.$error" class="text-danger">
-              {{ v$.nhanvien.CHUCVU.$errors[0].$message }}
+            <label for="phai" class="form-label">Phái</label>
+            <select v-model="form.phai" class="form-control" id="phai" @blur="v$.form.phai.$touch">
+              <option value="" disabled>Chọn phái</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+            <div v-if="v$.form.phai.$dirty && v$.form.phai.$error" class="text-danger">
+              {{ v$.form.phai.$errors[0].$message }}
             </div>
           </div>
           <div class="mb-3">
-            <label for="DIACHI" class="form-label">Địa chỉ</label>
-            <input v-model="nhanvien.DIACHI" type="text" class="form-control" id="DIACHI" placeholder="Nhập địa chỉ" @blur="v$.nhanvien.DIACHI.$touch" />
-            <div v-if="v$.nhanvien.DIACHI.$dirty && v$.nhanvien.DIACHI.$error" class="text-danger">
-              {{ v$.nhanvien.DIACHI.$errors[0].$message }}
+            <label for="diaChi" class="form-label">Địa chỉ</label>
+            <input v-model="form.diaChi" type="text" class="form-control" id="diaChi" @blur="v$.form.diaChi.$touch" />
+            <div v-if="v$.form.diaChi.$dirty && v$.form.diaChi.$error" class="text-danger">
+              {{ v$.form.diaChi.$errors[0].$message }}
             </div>
           </div>
           <div class="mb-3">
-            <label for="SODIENTHOAI" class="form-label">Số điện thoại</label>
-            <input v-model="nhanvien.SODIENTHOAI" type="text" class="form-control" id="SODIENTHOAI" placeholder="Nhập số điện thoại (VD: 0912345678)" @blur="v$.nhanvien.SODIENTHOAI.$touch" />
-            <div v-if="v$.nhanvien.SODIENTHOAI.$dirty && v$.nhanvien.SODIENTHOAI.$error" class="text-danger">
-              {{ v$.nhanvien.SODIENTHOAI.$errors[0].$message }}
+            <label for="dienThoai" class="form-label">Số điện thoại</label>
+            <input v-model="form.dienThoai" type="text" class="form-control" id="dienThoai" @blur="v$.form.dienThoai.$touch" />
+            <div v-if="v$.form.dienThoai.$dirty && v$.form.dienThoai.$error" class="text-danger">
+              {{ v$.form.dienThoai.$errors[0].$message || 'Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số (ví dụ: 0912345678)' }}
             </div>
           </div>
-          <div class="d-flex justify-content-end gap-2">
-            <button type="submit" class="btn btn-primary btn-lg">Lưu</button>
-            <router-link to="/nhanviens" class="btn btn-outline-secondary btn-lg">Hủy</router-link>
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
+            <router-link to="/nhanviens" class="btn btn-secondary">Hủy</router-link>
           </div>
         </form>
       </div>
@@ -61,11 +65,11 @@
 <script>
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers } from '@vuelidate/validators';
-import NhanvienService from '@/services/nhanvien.service';
+import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import { useAuthStore } from '@/stores/auth';
 
-const alphaNum = helpers.regex(/^[a-zA-Z0-9]+$/);
-const phoneVN = helpers.regex(/^(0[3|5|7|8|9])+([0-9]{8})$/);
+const phoneVN = helpers.regex(/^0[0-9]{9}$/);
 
 export default {
   setup() {
@@ -73,86 +77,60 @@ export default {
   },
   data() {
     return {
-      nhanvien: {
-        MSNV: '',
-        HOTENNV: '',
-        PASSWORD: '',
-        CHUCVU: '',
-        DIACHI: '',
-        SODIENTHOAI: '',
+      form: {
+        hoLot: '',
+        ten: '',
+        ngaySinh: '',
+        phai: '',
+        diaChi: '',
+        dienThoai: '',
       },
-      isEdit: false,
     };
   },
   validations() {
     return {
-      nhanvien: {
-        MSNV: { required, alphaNum },
-        HOTENNV: { required },
-        PASSWORD: { required },
-        CHUCVU: { required },
-        DIACHI: { required },
-        SODIENTHOAI: { required, phoneVN },
+      form: {
+        hoLot: { required },
+        ten: { required },
+        ngaySinh: { required },
+        phai: { required },
+        diaChi: { required },
+        dienThoai: { required, phoneVN },
       },
     };
   },
   methods: {
-    async handleSubmit() {
+    async handleAddNhanvien() {
       const isValid = await this.v$.$validate();
-      if (!isValid) return;
+      if (!isValid) {
+        useToast().error('Vui lòng kiểm tra lại thông tin nhập');
+        return;
+      }
 
+      const authStore = useAuthStore();
       try {
-        if (this.isEdit) {
-          await NhanvienService.update(this.nhanvien.MSNV, this.nhanvien);
-          useToast().success('Cập nhật nhân viên thành công');
-        } else {
-          await NhanvienService.create(this.nhanvien);
-          useToast().success('Thêm nhân viên thành công');
-        }
+        const token = authStore.token;
+        await axios.post('http://localhost:3000/api/nhanviens', this.form, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        useToast().success('Thêm nhân viên thành công');
         this.$router.push('/nhanviens');
       } catch (error) {
-        console.error(error);
-        useToast().error('Lưu nhân viên thất bại');
-      }
-    },
-    async loadNhanvien() {
-      if (this.$route.params.id) {
-        this.isEdit = true;
-        try {
-          const data = await NhanvienService.get(this.$route.params.id);
-          this.nhanvien = { ...data, PASSWORD: '' };
-        } catch (error) {
-          console.error(error);
-          useToast().error('Không thể tải thông tin nhân viên');
+        if (error.response?.status === 401) {
+          useToast().error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+          authStore.logout();
+          this.$router.push('/login');
+        } else {
+          useToast().error(error.response?.data?.message || 'Thêm nhân viên thất bại');
         }
       }
     },
-  },
-  mounted() {
-    this.loadNhanvien();
   },
 };
 </script>
 
 <style scoped>
-.page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-.card {
-  border-radius: 10px;
-}
-.card-header {
-  border-radius: 10px 10px 0 0;
-}
-.form-control {
-  border-radius: 5px;
-}
-.btn-lg {
-  padding: 10px 20px;
-}
-.shadow-sm {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
+.page { max-width: 600px; margin: 0 auto; padding-top: 20px; }
+.card { border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.card-header { border-radius: 10px 10px 0 0; }
 </style>

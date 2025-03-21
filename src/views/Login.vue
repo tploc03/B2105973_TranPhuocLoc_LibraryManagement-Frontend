@@ -1,4 +1,3 @@
-<!-- src/views/Login.vue -->
 <template>
   <div class="page">
     <div class="card">
@@ -38,9 +37,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useToast } from 'vue-toastification';
 
 export default {
-  setup() {
-    return { v$: useVuelidate() };
-  },
+  setup() { return { v$: useVuelidate() }; },
   data() {
     return {
       form: {
@@ -66,9 +63,14 @@ export default {
       try {
         await authStore.login(this.form.username, this.form.password);
         useToast().success('Đăng nhập thành công');
-        this.$router.push('/');
+        // Chuyển hướng dựa trên vai trò
+        if (authStore.isAdmin()) {
+          this.$router.push('/sachs');
+        } else {
+          this.$router.push('/user/home'); // Chuyển hướng đến trang chủ
+        }
       } catch (error) {
-        // Lỗi đã được xử lý trong store
+        useToast().error(error.response?.data?.message || 'Đăng nhập thất bại');
       }
     },
   },
@@ -76,16 +78,7 @@ export default {
 </script>
 
 <style scoped>
-.page {
-  max-width: 400px;
-  margin: 0 auto;
-  padding-top: 50px;
-}
-.card {
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.card-header {
-  border-radius: 10px 10px 0 0;
-}
+.page { max-width: 600px; margin: 0 auto; padding-top: 50px; }
+.card { border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.card-header { border-radius: 10px 10px 0 0; }
 </style>

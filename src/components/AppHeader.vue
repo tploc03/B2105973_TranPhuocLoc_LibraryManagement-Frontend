@@ -1,29 +1,25 @@
-<!-- src/components/AppHeader.vue -->
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/">Quản lý Thư viện</router-link>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <!-- Sửa liên kết logo -->
+      <router-link class="navbar-brand" :to="logoRedirectPath">Quản lý Thư viện</router-link>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'sach-list' }">Sách</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'docgia-list' }">Độc giả</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'nhanvien-list' }">Nhân viên</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'nhaxuatban-list' }">Nhà xuất bản</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'muonsach-list' }">Mượn sách</router-link>
-          </li>
+          <template v-if="authStore.isAdmin()">
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'sach-list' }">Sách</router-link></li>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'docgia-list' }">Người dùng</router-link></li>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'nhanvien-list' }">Nhân viên</router-link></li>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'nhaxuatban-list' }">Nhà xuất bản</router-link></li>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'muonsach-list' }">Mượn sách</router-link></li>
+          </template>
+          <template v-else>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'user-sach-list' }">Sách</router-link></li>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'user-nhaxuatban-list' }">Nhà xuất bản</router-link></li>
+            <li class="nav-item"><router-link class="nav-link" :to="{ name: 'user-muonsach-list' }">Lịch sử mượn sách</router-link></li>
+          </template>
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item" v-if="isAuthenticated">
@@ -51,11 +47,14 @@ export default {
     return { authStore };
   },
   computed: {
-    isAuthenticated() {
-      return this.authStore.isAuthenticated;
-    },
-    user() {
-      return this.authStore.user;
+    isAuthenticated() { return this.authStore.isAuthenticated; },
+    user() { return this.authStore.user; },
+    // Tính toán đường dẫn cho logo
+    logoRedirectPath() {
+      if (!this.isAuthenticated) {
+        return '/login';
+      }
+      return this.authStore.isAdmin() ? '/sachs' : '/user/home';
     },
   },
   methods: {
@@ -64,14 +63,9 @@ export default {
       this.$router.push('/login');
     },
   },
-  mounted() {
-    this.authStore.loadUserFromToken();
-  },
 };
 </script>
 
 <style scoped>
-.navbar {
-  margin-bottom: 20px;
-}
+.navbar { margin-bottom: 20px; }
 </style>
