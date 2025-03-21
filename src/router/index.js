@@ -94,6 +94,11 @@ const routes = [
     name: 'muonsach-edit',
     component: () => import('../views/MuonsachForm.vue'),
   },
+  { 
+    path: '/:pathMatch(.*)*', 
+    name: 'not-found', 
+    component: () => import('../views/NotFound.vue') 
+  },
 ];
 
 const router = createRouter({
