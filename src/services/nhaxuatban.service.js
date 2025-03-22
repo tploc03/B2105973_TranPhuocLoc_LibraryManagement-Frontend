@@ -1,5 +1,4 @@
 // library-frontend\src\services\nhaxuatban.service.js
-
 import createApiClient from './api.service';
 
 class NhaxuatbanService {
